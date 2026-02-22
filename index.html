@@ -1,80 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Hogwarts Sorting Ceremony</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-        }
-        header {
-            background: #35424a;
-            color: #ffffff;
-            padding: 20px 0;
-            text-align: center;
-        }
-        h1 {
-            margin: 0;
-        }
-        .sorting-hat {
-            margin: 40px 0;
-            padding: 20px;
-            background: #ffffff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-        }
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            background: #35424a;
-            color: #ffffff;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
-    <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/d/AKfycbwDLb4itqneeeT-TOtO93NM_0iLIOB52zyjEoX9DI6ycr8RpwuELDbxUE3IUWM5DAexng/userweb_app";
+<!-- Google Sheets Integration -->
+<script>
+  function sendResultsToSheet(data) {
+    const sheetId = 'YOUR_SHEET_ID';
+    const sheetName = 'Results';
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}!A1:append?valueInputOption=RAW&key=YOUR_API_KEY`;
+    const params = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        values: [data],
+      }),
+    };
 
-        function sortStudent(studentName) {
-            // Simulate the sorting process with a timeout
-            const houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin'];
-            const randomIndex = Math.floor(Math.random() * houses.length);
-            const assignedHouse = houses[randomIndex];
-            alert(studentName + ', you have been sorted into ' + assignedHouse + '!');
-        }
+    fetch(url, params)
+      .then(response => response.json())
+      .then(data => console.log('Success:', data))
+      .catch((error) => console.error('Error:', error));
+  }
 
-        function startSorting() {
-            const studentName = document.getElementById('studentName').value;
-            if (studentName) {
-                sortStudent(studentName);
-            } else {
-                alert('Please enter your name before sorting.');
-            }
-        }
-    </script>
-</head>
-<body>
-    <header>
-        <h1>Welcome to the Hogwarts Sorting Ceremony</h1>
-    </header>
-    <div class="container">
-        <div class="sorting-hat">
-            <h2>Enter Your Name to be Sorted</h2>
-            <input type="text" id="studentName" placeholder="Your Name" />
-            <button onclick="startSorting()">Sort Me!</button>
-        </div>
-    </div>
-    <footer>
-        <p>&copy; 2026 Hogwarts Sorting Ceremony</p>
-    </footer>
-</body>
-</html>
+  // Example usage
+  // sendResultsToSheet(['Sorting Result', 'Example']);
+</script>
