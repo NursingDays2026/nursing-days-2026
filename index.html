@@ -44,69 +44,27 @@
             margin-top: 20px;
             padding: 15px;
             background: #e8f5e9;
-            border: 1px solid #4caf50;
+            border: 2px solid #4caf50;
             border-radius: 5px;
             display: none;
+            font-size: 16px;
+            color: #2e7d32;
         }
         .result.show {
             display: block;
+            animation: slideIn 0.5s ease-in;
         }
-    </style>
-    <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/d/AKfycbwDLb4itqneeeT-TOtO93NM_0iLIOB52zyjEoX9DI6ycr8RpwuELDbxUE3IUWM5DAexng/userweb_app";
-
-        function sortStudent(studentName) {
-            // Simulate the sorting process with a timeout
-            const houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin'];
-            const randomIndex = Math.floor(Math.random() * houses.length);
-            const assignedHouse = houses[randomIndex];
-            
-            // Send data to Google Sheet
-            sendToGoogleSheet(studentName, assignedHouse);
-            
-            // Show result to user
-            showResult(studentName, assignedHouse);
-        }
-
-        function sendToGoogleSheet(studentName, assignedHouse) {
-            const data = {
-                studentName: studentName,
-                assignedHouse: assignedHouse,
-                timestamp: new Date().toLocaleString()
-            };
-
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        function showResult(studentName, assignedHouse) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `<strong>${studentName}, you have been sorted into ${assignedHouse}!</strong><br><p style=\"font-size: 12px; margin-top: 10px;\">Result submitted to spreadsheet.</p>`;
-            resultDiv.classList.add('show');
-        }
-
-        function startSorting() {
-            const studentName = document.getElementById('studentName').value;
-            if (studentName) {
-                sortStudent(studentName);
-                document.getElementById('studentName').value = '';
-            } else {
-                alert('Please enter your name before sorting.');
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-
-        // Allow Enter key to trigger sorting
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('studentName').addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    startSorting();
-                }
-            });
-        });
-    </script>
+    </style>
 </head>
 <body>
     <header>
@@ -123,5 +81,59 @@
     <footer>
         <p>&copy; 2026 Hogwarts Sorting Ceremony</p>
     </footer>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/d/AKfycbwDLb4itqneeeT-TOtO93NM_0iLIOB52zyjEoX9DI6ycr8RpwuELDbxUE3IUWM5DAexng/userweb_app";
+
+        function sortStudent(studentName) {
+            const houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin'];
+            const randomIndex = Math.floor(Math.random() * houses.length);
+            const assignedHouse = houses[randomIndex];
+            
+            sendToGoogleSheet(studentName, assignedHouse);
+            showResult(studentName, assignedHouse);
+        }
+
+        function sendToGoogleSheet(studentName, assignedHouse) {
+            const data = {
+                studentName: studentName,
+                assignedHouse: assignedHouse,
+                timestamp: new Date().toLocaleString()
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                mode: 'no-cors'
+            })
+            .then(response => console.log('Data sent successfully'))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function showResult(studentName, assignedHouse) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<strong>${studentName}, you have been sorted into ${assignedHouse}!</strong><p style="margin-top: 10px; font-size: 14px;">✓ Result submitted to spreadsheet</p>`;
+            resultDiv.classList.remove('show');
+            setTimeout(function() {
+                resultDiv.classList.add('show');
+            }, 10);
+        }
+
+        function startSorting() {
+            const studentName = document.getElementById('studentName').value.trim();
+            if (studentName) {
+                sortStudent(studentName);
+                document.getElementById('studentName').value = '';
+            } else {
+                alert('Please enter your name before sorting.');
+            }
+        }
+
+        document.getElementById('studentName').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                startSorting();
+            }
+        });
+    </script>
 </body>
 </html>
